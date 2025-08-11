@@ -36,7 +36,7 @@
       top: 175px;
       left: 174px;
       width: 240px;
-      height: 240px; /* додано висоту */
+      height: 240px;
       overflow: hidden;
       z-index: 10;
       background: transparent;
@@ -117,7 +117,6 @@
 
     <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
 
-      <!-- Ліва колонка - вибір фото та налаштування, по центру -->
       <div class="flex flex-col items-center justify-center text-center">
 
         <h2 class="text-xl font-semibold mb-4">Upload your image to preview it on the bag</h2>
@@ -161,8 +160,6 @@
         </div>
 
       </div>
-
-      <!-- Права колонка - область з сумкою та зображенням -->
       <div class="product-container">
         <p class="placeholder-text" id="placeholderText">Choose a photo to<br>print on the bag</p>
 
@@ -170,7 +167,7 @@
           <img id="customerImage" class="customer-image hidden" src="" alt="Your image">
         </div>
 
-        <img id="bagImage" class="bag-image" src="./SHOPPER.png" alt="Bag">
+        <img id="bagImage" class="bag-image" src="SHOPPER.png" alt="Bag">
       </div>
 
     </div>
@@ -216,7 +213,7 @@
 
         showResultBtn.disabled = false;
         imageControls.classList.remove('hidden');
-        resetImageSettings(); // Це також покаже зображення (якщо хочеш — можу прибрати)
+        resetImageSettings();
         placeholderText.classList.add('hidden');
         customerImage.classList.remove('hidden');
       };
@@ -265,12 +262,9 @@
     zoomSlider.value = 100;
     updateImageTransform();
 
-    // Сховати зображення
     customerImage.classList.add('hidden');
-    // Показати текст-підказку
     placeholderText.innerHTML = 'Choose a photo to<br>print on the bag';
     placeholderText.classList.remove('hidden');
-    // Деактивувати кнопку перегляду
     showResultBtn.disabled = true;
   }
 
