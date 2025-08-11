@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Bag Customization</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #f8f9fa;
+    }
+
+    .product-container {
+      position: relative;
+      width: 600px;
+      height: 450px;
+      margin: 0 auto;
+      overflow: hidden;
+      background-color: #f0f0f0;
+    }
+
+    .bag-image {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      position: absolute;
+      top: 0;
+      left: 0;
+      z-index: 20;
+      pointer-events: none;
+    }
+
+    .print-area {
+      position: absolute;
+      top: 175px;
+      left: 174px;
+      width: 240px;
+      height: 240px; /* додано висоту */
+      overflow: hidden;
+      z-index: 10;
+      background: transparent;
+    }
+
+    .customer-image {
+      position: absolute;
+      top: 0;
+      left: 0;
+      height: 100%;
+      width: auto;
+      object-fit: contain;
+      cursor: grab;
+      user-select: none;
+      transition: transform 0.1s ease-out;
+    }
+
+    .notification {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      padding: 12px 20px;
+      background-color: #10b981;
+      color: white;
+      border-radius: 8px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      transform: translateX(200%);
+      transition: transform 0.3s ease;
+      z-index: 100;
+    }
+
+    .notification.show {
+      transform: translateX(0);
+    }
+
+    .controls {
+      display: flex;
+      gap: 10px;
+      margin-top: 10px;
+    }
+
+    .btn {
+      transition: all 0.2s ease;
+    }
+
+    .btn:hover {
+      transform: translateY(-2px);
+    }
+
+    .btn:active {
+      transform: translateY(0);
+    }
+
+    .zoom-slider {
+      width: 100%;
+    }
+
+    .placeholder-text {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      color: #6b7280;
+      text-align: center;
+      z-index: 5;
+      padding: 1rem;
+      background-color: rgba(255, 255, 255, 0.7);
+      border-radius: 0.5rem;
+      white-space: nowrap;
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col items-center justify-center p-4 bg-gray-50">
+
+  <div class="max-w-3xl w-full bg-white rounded-xl shadow-lg p-6 mb-8">
+
+    <h1 class="text-3xl font-bold text-center mb-6 text-indigo-700">Customization</h1>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+
+      <!-- Ліва колонка - вибір фото та налаштування, по центру -->
+      <div class="flex flex-col items-center justify-center text-center">
+
+        <h2 class="text-xl font-semibold mb-4">Upload your image to preview it on the bag</h2>
+
+        <div class="mb-6">
+          <input type="file" id="customerImageUpload" accept="image/*" class="hidden" />
+          <button onclick="document.getElementById('customerImageUpload').click()" 
+            class="w-full max-w-xs bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2 px-4 rounded-lg btn">
+            Choose Photo
+          </button>
+        </div>
+
+        <div id="imageControls" class="mb-6 hidden w-full max-w-xs text-left">
+
+          <h3 class="text-lg font-medium text-gray-800 mb-2">Image Settings:</h3>
+
+          <div class="mb-4">
+            <label for="zoomSlider" class="block text-sm font-medium text-gray-700 mb-1">Zoom:</label>
+            <input type="range" id="zoomSlider" min="50" max="200" value="100" class="zoom-slider">
+          </div>
+
+          <div class="mb-4">
+            <label class="block text-sm font-medium text-gray-700 mb-1">Move:</label>
+            <div class="controls">
+              <button id="moveUp" class="flex-1 bg-gray-200 hover:bg-gray-300 text-gray-800 font-medium py-2 px-4 rounded-lg btn">↑</button>
+              <button id="moveLeft" class="flex-1 bg-gray-200 hover:bg-gray-300 text-gray-800 font-medium py-2 px-4 rounded-lg btn">←</button>
+              <button id="moveRight" class="flex-1 bg-gray-200 hover:bg-gray-300 text-gray-800 font-medium py-2 px-4 rounded-lg btn">→</button>
+              <button id="moveDown" class="flex-1 bg-gray-200 hover:bg-gray-300 text-gray-800 font-medium py-2 px-4 rounded-lg btn">↓</button>
+            </div>
+          </div>
+
+          <button id="resetImage" class="w-full bg-red-500 hover:bg-red-600 text-white font-medium py-2 px-4 rounded-lg btn">
+            Reset Settings
+          </button>
+        </div>
+
+        <div class="mt-6 w-full max-w-xs">
+          <button id="showResult" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg btn mb-4" disabled>
+            Show Preview
+          </button>
+        </div>
+
+      </div>
+
+      <!-- Права колонка - область з сумкою та зображенням -->
+      <div class="product-container">
+        <p class="placeholder-text" id="placeholderText">Choose a photo to<br>print on the bag</p>
+
+        <div class="print-area">
+          <img id="customerImage" class="customer-image hidden" src="" alt="Your image">
+        </div>
+
+        <img id="bagImage" class="bag-image" src="./img/SHOPPER.png" alt="Bag">
+      </div>
+
+    </div>
+  </div>
+
+  <div class="notification" id="notification">
+    <p>Photo selected!</p>
+  </div>
+
+  <p class="text-sm text-gray-500 mt-4 text-center max-w-lg">
+    Choose your photo that will appear through the transparent area on the bag.<br/>
+    You can adjust zoom and position to perfectly place your image.
+  </p>
+
+  <script>
+  const customerImageUpload = document.getElementById('customerImageUpload');
+  const customerImage = document.getElementById('customerImage');
+  const notification = document.getElementById('notification');
+  const imageControls = document.getElementById('imageControls');
+  const showResultBtn = document.getElementById('showResult');
+  const zoomSlider = document.getElementById('zoomSlider');
+  const moveUp = document.getElementById('moveUp');
+  const moveDown = document.getElementById('moveDown');
+  const moveLeft = document.getElementById('moveLeft');
+  const moveRight = document.getElementById('moveRight');
+  const resetImage = document.getElementById('resetImage');
+  const placeholderText = document.getElementById('placeholderText');
+
+  let customerImageSelected = false;
+  let posX = 0;
+  let posY = 0;
+  let zoom = 1;
+
+  customerImageUpload.addEventListener('change', function(event) {
+    if (event.target.files && event.target.files[0]) {
+      const fileReader = new FileReader();
+      fileReader.onload = function(e) {
+        customerImage.src = e.target.result;
+        customerImageSelected = true;
+
+        notification.classList.add('show');
+        setTimeout(() => notification.classList.remove('show'), 3000);
+
+        showResultBtn.disabled = false;
+        imageControls.classList.remove('hidden');
+        resetImageSettings(); // Це також покаже зображення (якщо хочеш — можу прибрати)
+        placeholderText.classList.add('hidden');
+        customerImage.classList.remove('hidden');
+      };
+      fileReader.readAsDataURL(event.target.files[0]);
+    }
+  });
+
+  showResultBtn.addEventListener('click', function() {
+    if (customerImageSelected) {
+      customerImage.classList.remove('hidden');
+      placeholderText.classList.add('hidden');
+    }
+  });
+
+  zoomSlider.addEventListener('input', function() {
+    zoom = this.value / 100;
+    updateImageTransform();
+  });
+
+  moveUp.addEventListener('click', () => {
+    posY -= 10;
+    updateImageTransform();
+  });
+
+  moveDown.addEventListener('click', () => {
+    posY += 10;
+    updateImageTransform();
+  });
+
+  moveLeft.addEventListener('click', () => {
+    posX -= 10;
+    updateImageTransform();
+  });
+
+  moveRight.addEventListener('click', () => {
+    posX += 10;
+    updateImageTransform();
+  });
+
+  resetImage.addEventListener('click', resetImageSettings);
+
+  function resetImageSettings() {
+    posX = 0;
+    posY = 0;
+    zoom = 1;
+    zoomSlider.value = 100;
+    updateImageTransform();
+
+    // Сховати зображення
+    customerImage.classList.add('hidden');
+    // Показати текст-підказку
+    placeholderText.innerHTML = 'Choose a photo to<br>print on the bag';
+    placeholderText.classList.remove('hidden');
+    // Деактивувати кнопку перегляду
+    showResultBtn.disabled = true;
+  }
+
+  function updateImageTransform() {
+    customerImage.style.transform = `translate(${posX}px, ${posY}px) scale(${zoom})`;
+  }
+</script>
+
+</body>
+</html>
